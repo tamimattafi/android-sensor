@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-<!--
-    <declare-styleable name="SensibleShadowView">
-        <attr name="shadowRadius" format="dimension" />
-        <attr name="shadowColor" format="color"/>
-    </declare-styleable>
--->
-
-    <declare-styleable name="SensibleImageView">
-        <attr name="shadowRadius" format="dimension" />
-        <attr name="shadowColor" format="color"/>
+    <declare-styleable name="SensibleImageCardView">
+        <attr name="shadowRadius" format="integer" />
+        <attr name="shadowColorFilter" format="color"/>
+        <attr name="shadowAlpha" format="integer"/>
+        <attr name="shadowBlurSampling" format="integer"/>
+        <attr name="shadowPadding" format="dimension"/>
     </declare-styleable>
 </resources>

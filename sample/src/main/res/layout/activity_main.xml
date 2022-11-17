@@ -8,12 +8,25 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <com.attafitamim.sensor.widgets.card.SensibleImageView
+    <View
+        android:visibility="gone"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/black"
+        app:layout_constraintStart_toStartOf="@id/imgCard"
+        app:layout_constraintEnd_toEndOf="@id/imgCard"
+        app:layout_constraintTop_toTopOf="@id/imgCard"
+        app:layout_constraintBottom_toBottomOf="@id/imgCard" />
+
+    <com.attafitamim.sensor.widgets.card.SensibleImageCardView
         android:id="@+id/imgCard"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:shadowRadius="8dp"
-        android:padding="16dp"
+        app:shadowRadius="25"
+        app:shadowBlurSampling="2"
+        app:shadowColorFilter="#C6C6C6"
+        app:shadowPadding="12dp"
+        android:padding="20dp"
         android:adjustViewBounds="true"
         android:src="@drawable/card"
         app:layout_constraintBottom_toBottomOf="parent"
