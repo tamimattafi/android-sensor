@@ -8,7 +8,6 @@ import android.graphics.LightingColorFilter
 import android.graphics.Paint
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
-import android.util.Log
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.content.withStyledAttributes
 import androidx.core.graphics.applyCanvas
