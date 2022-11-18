@@ -8,6 +8,7 @@ import android.graphics.LightingColorFilter
 import android.graphics.Paint
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
+import android.util.Log
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.content.withStyledAttributes
 import androidx.core.graphics.applyCanvas
@@ -16,6 +17,7 @@ import com.attafitamim.sensor.core.base.Speed
 import com.attafitamim.sensor.core.hardware.OrientationSensor
 import com.attafitamim.sensor.widgets.card.blur.BlurFactor
 import com.attafitamim.sensor.widgets.card.blur.BlurProvider
+import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
@@ -176,37 +178,53 @@ class SensibleImageCardView @JvmOverloads constructor(
             return
         }
 
+        val processedRoll = when {
+            roll >= MAX_ROLL_DEGREE -> roll - MAX_FLAT_DEGREE
+            roll <= -MAX_ROLL_DEGREE -> roll + MAX_FLAT_DEGREE
+            else -> roll
+        }
+
         val initPitch = this.initPitch ?: kotlin.run {
             this.initPitch = pitch
             pitch
         }
 
         val initRoll = this.initRoll ?: kotlin.run {
-            this.initRoll = roll
-            roll
+            this.initRoll = processedRoll
+            processedRoll
         }
 
-        val pitchDiff = initPitch - pitch
-        val rollDiff = initRoll - roll
+        val pitchDiff: Double = initPitch - pitch
+        val rollDiff: Double = initRoll - processedRoll
 
-        val maxTranslate = shadowPadding + shadowRadius
-        val minTranslate = -maxTranslate
+        Log.d("BITMAP", "initRoll = ($initRoll), initPitch = ($initPitch)")
+        Log.d("BITMAP", "roll = ($roll), pitch = ($pitch)")
+        Log.d("BITMAP", "rollDiff = ($rollDiff), pitchDiff = ($pitchDiff)")
+        val maxTranslateX = paddingStart.toFloat()
+        val minTranslateX = -paddingEnd.toFloat()
 
-        val initialTranslateX = -(rollDiff * 1.25).toFixed(2).toFloat()
-        val initialTranslateY = (pitchDiff * 1.25).toFixed(2).toFloat()
+        val maxTranslateY = paddingTop.toFloat()
+        val minTranslateY = -paddingBottom.toFloat()
 
-        this.translateX = when {
-            initialTranslateX < minTranslate -> minTranslate
-            initialTranslateX > maxTranslate -> maxTranslate
+        val initialTranslateX = -(rollDiff * 1.5).toFixed(2).toFloat()
+        val initialTranslateY = (pitchDiff * 1.5).toFixed(2).toFloat()
+
+        val finalTranslateX = when {
+            initialTranslateX < minTranslateX -> minTranslateX
+            initialTranslateX > maxTranslateX -> maxTranslateX
             else -> initialTranslateX
         }
 
-        this.translateY = when {
-            initialTranslateY < minTranslate -> minTranslate
-            initialTranslateY > maxTranslate -> maxTranslate
+        val finalTranslateY = when {
+            initialTranslateY < minTranslateY -> minTranslateY
+            initialTranslateY > maxTranslateY -> maxTranslateY
             else -> initialTranslateY
         }
 
+        if (this.translateX == finalTranslateX && this.translateY == finalTranslateY) return
+
+        this.translateX = finalTranslateX
+        this.translateY = finalTranslateY
         invalidate()
     }
 
@@ -216,11 +234,14 @@ class SensibleImageCardView @JvmOverloads constructor(
     }
 
     private companion object {
-        private const val STABILIZING_LEVEL = 50
+        private const val STABILIZING_LEVEL = 100
         private const val DEFAULT_SHADOW_RADIUS = 25
-        private const val DEFAULT_SHADOW_ALPHA = 242
+        private const val DEFAULT_SHADOW_ALPHA = 255
         private const val DEFAULT_SHADOW_BLUR_SAMPLING = 1
         private const val DEFAULT_SHADOW_PADDING = 0f
         private const val DEFAULT_SHADOW_DARKEN_COLOR = 0xFF7F7F7F.toInt()
+
+        private const val MAX_ROLL_DEGREE = 170f
+        private const val MAX_FLAT_DEGREE = 180f
     }
 }
