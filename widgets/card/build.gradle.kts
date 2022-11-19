@@ -3,6 +3,9 @@ plugins {
     id("org.jetbrains.kotlin.android")
 }
 
+ext.set("PUBLISH_ARTIFACT_ID", "card")
+apply(from = "${rootProject.projectDir}/scripts/publish-module.gradle")
+
 android {
     namespace = "com.attafitamim.sensor.widgets.card"
     compileSdk = 33

@@ -8,7 +8,6 @@ import android.graphics.LightingColorFilter
 import android.graphics.Paint
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
-import android.util.Log
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.content.withStyledAttributes
 import androidx.core.graphics.applyCanvas
@@ -17,7 +16,6 @@ import com.attafitamim.sensor.core.base.Speed
 import com.attafitamim.sensor.core.hardware.OrientationSensor
 import com.attafitamim.sensor.widgets.card.blur.BlurFactor
 import com.attafitamim.sensor.widgets.card.blur.BlurProvider
-import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
@@ -230,9 +228,6 @@ class SensibleImageCardView @JvmOverloads constructor(
         val pitchDiff: Double = initPitch - pitch
         val rollDiff: Double = initRoll - processedRoll
 
-        Log.d("BITMAP", "initRoll = ($initRoll), initPitch = ($initPitch)")
-        Log.d("BITMAP", "roll = ($roll), pitch = ($pitch)")
-        Log.d("BITMAP", "rollDiff = ($rollDiff), pitchDiff = ($pitchDiff)")
         val maxTranslateX = paddingStart.toFloat()
         val minTranslateX = -paddingEnd.toFloat()
 
