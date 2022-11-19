@@ -46,23 +46,25 @@ class SensibleImageCardView @JvmOverloads constructor(
     private val shadowHeight get() = measuredHeight - shadowPadding * 2
     private val shadowWidth get() = measuredWidth - shadowPadding * 2
 
+    private var sensibleElement = SensibleElement.SHADOW
+
     private val blurProvider by lazy {
         BlurProvider(context)
     }
 
     init {
         context.withStyledAttributes(attributeSet, R.styleable.SensibleImageCardView) {
-            shadowRadius = getInteger(
+            shadowRadius = getInt(
                 R.styleable.SensibleImageCardView_shadowRadius,
                 DEFAULT_SHADOW_RADIUS
             )
 
-            shadowPaint.alpha = getInteger(
+            shadowPaint.alpha = getInt(
                 R.styleable.SensibleImageCardView_shadowAlpha,
                 DEFAULT_SHADOW_ALPHA
             )
 
-            shadowBlurSampling = getInteger(
+            shadowBlurSampling = getInt(
                 R.styleable.SensibleImageCardView_shadowBlurSampling,
                 DEFAULT_SHADOW_BLUR_SAMPLING
             )
@@ -76,6 +78,13 @@ class SensibleImageCardView @JvmOverloads constructor(
                 R.styleable.SensibleImageCardView_shadowColorFilter,
                 DEFAULT_SHADOW_DARKEN_COLOR
             )
+
+            val shadowElementOrdinal = getInt(
+                R.styleable.SensibleImageCardView_sensibleElement,
+                SensibleElement.SHADOW.ordinal
+            )
+
+            sensibleElement = SensibleElement.values()[shadowElementOrdinal]
 
             shadowPaint.colorFilter = LightingColorFilter(colorFilter, Color.TRANSPARENT)
         }
@@ -103,16 +112,40 @@ class SensibleImageCardView @JvmOverloads constructor(
 
     override fun draw(canvas: Canvas) {
         fun drawImages(shadowBitmap: Bitmap?) {
-            if (shadowBitmap != null) canvas.withTranslation(shadowPadding, shadowPadding) {
-                drawBitmap(
-                    shadowBitmap,
-                    0f,
-                    0f,
-                    shadowPaint
-                )
+            if (shadowBitmap != null) {
+                val isShadowSensible = sensibleElement == SensibleElement.ALL ||
+                        sensibleElement == SensibleElement.SHADOW
+
+                var shadowTranslationX = shadowPadding
+                var shadowTranslationY = shadowPadding
+
+                if (isShadowSensible) {
+                    shadowTranslationX -= translateX
+                    shadowTranslationY -= translateY
+                }
+
+                canvas.withTranslation(shadowTranslationX, shadowTranslationY) {
+                    drawBitmap(
+                        shadowBitmap,
+                        0f,
+                        0f,
+                        shadowPaint
+                    )
+                }
             }
 
-            canvas.withTranslation(translateX, translateY) {
+            val isSensibleImage = sensibleElement == SensibleElement.ALL ||
+                    sensibleElement == SensibleElement.IMAGE
+
+            var imageTranslationX = 0f
+            var imageTranslationY = 0f
+
+            if (isSensibleImage) {
+                imageTranslationX += translateX
+                imageTranslationY += translateY
+            }
+
+            canvas.withTranslation(imageTranslationX, imageTranslationY) {
                 super.draw(this)
             }
         }
@@ -226,6 +259,13 @@ class SensibleImageCardView @JvmOverloads constructor(
         this.translateX = finalTranslateX
         this.translateY = finalTranslateY
         invalidate()
+    }
+
+    enum class SensibleElement {
+        SHADOW,
+        IMAGE,
+        ALL,
+        NONE
     }
 
     private fun Double.toFixed(decimals: Int): Double {
