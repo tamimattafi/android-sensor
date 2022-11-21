@@ -28,6 +28,8 @@
         app:shadowColorFilter="#A8A8A8"
         app:shadowPadding="14dp"
         android:padding="24dp"
+        app:shadowAlphaPercent="0.9"
+        app:sensorStabilizingLevel="100"
         android:adjustViewBounds="true"
         android:src="@drawable/card"
         app:layout_constraintBottom_toBottomOf="parent"

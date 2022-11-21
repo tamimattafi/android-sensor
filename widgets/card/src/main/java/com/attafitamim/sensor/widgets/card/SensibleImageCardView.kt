@@ -39,6 +39,8 @@ class SensibleImageCardView @JvmOverloads constructor(
 
     private val shadowPaint = Paint()
     private var shadowBitmap: Bitmap? = null
+
+    private var stabilizingLevel = STABILIZING_LEVEL
     private var currentStabilizingLevel = 0
 
     private val shadowHeight get() = measuredHeight - shadowPadding * 2
@@ -57,10 +59,12 @@ class SensibleImageCardView @JvmOverloads constructor(
                 DEFAULT_SHADOW_RADIUS
             )
 
-            shadowPaint.alpha = getInt(
-                R.styleable.SensibleImageCardView_shadowAlpha,
-                DEFAULT_SHADOW_ALPHA
+            val alphaPercent = getFloat(
+                R.styleable.SensibleImageCardView_shadowAlphaPercent,
+                DEFAULT_SHADOW_ALPHA_PERCENT
             )
+
+            shadowPaint.alpha = (DEFAULT_SHADOW_ALPHA * alphaPercent).roundToInt()
 
             shadowBlurSampling = getInt(
                 R.styleable.SensibleImageCardView_shadowBlurSampling,
@@ -75,6 +79,11 @@ class SensibleImageCardView @JvmOverloads constructor(
             val colorFilter = getColor(
                 R.styleable.SensibleImageCardView_shadowColorFilter,
                 DEFAULT_SHADOW_DARKEN_COLOR
+            )
+
+            stabilizingLevel = getInt(
+                R.styleable.SensibleImageCardView_sensorStabilizingLevel,
+                STABILIZING_LEVEL
             )
 
             val shadowElementOrdinal = getInt(
@@ -99,13 +108,13 @@ class SensibleImageCardView @JvmOverloads constructor(
     }
 
     override fun setImageDrawable(drawable: Drawable?) {
+        clearShadowBitmap()
         super.setImageDrawable(drawable)
-        updateShadowBitmap()
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        clearShadowBitmap()
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-        updateShadowBitmap()
     }
 
     override fun draw(canvas: Canvas) {
@@ -183,8 +192,8 @@ class SensibleImageCardView @JvmOverloads constructor(
         }
     }
 
-    private fun updateShadowBitmap() {
-
+    private fun clearShadowBitmap() {
+        shadowBitmap = null
     }
 
     private fun initSensor() {
@@ -204,7 +213,7 @@ class SensibleImageCardView @JvmOverloads constructor(
     }
 
     private fun tryUpdateValues(azimuth: Double, pitch: Double, roll: Double) {
-        if (currentStabilizingLevel < STABILIZING_LEVEL) {
+        if (currentStabilizingLevel < stabilizingLevel) {
             currentStabilizingLevel++
             return
         }
@@ -271,6 +280,7 @@ class SensibleImageCardView @JvmOverloads constructor(
     private companion object {
         private const val STABILIZING_LEVEL = 100
         private const val DEFAULT_SHADOW_RADIUS = 25
+        private const val DEFAULT_SHADOW_ALPHA_PERCENT = 1f
         private const val DEFAULT_SHADOW_ALPHA = 255
         private const val DEFAULT_SHADOW_BLUR_SAMPLING = 1
         private const val DEFAULT_SHADOW_PADDING = 0f

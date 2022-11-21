@@ -3,9 +3,10 @@
     <declare-styleable name="SensibleImageCardView">
         <attr name="shadowRadius" format="integer" />
         <attr name="shadowColorFilter" format="color"/>
-        <attr name="shadowAlpha" format="integer"/>
+        <attr name="shadowAlphaPercent" format="float"/>
         <attr name="shadowBlurSampling" format="integer"/>
         <attr name="shadowPadding" format="dimension"/>
+        <attr name="sensorStabilizingLevel" format="integer"/>
         <attr name="sensibleElement" format="enum">
             <enum name="shadow" value="0"/>
             <enum name="image" value="1" />
